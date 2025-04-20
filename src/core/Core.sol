@@ -42,10 +42,7 @@ contract Core is Ownable {
                                 EVENTS
     ==============================================================*/
     event PluginAdded(uint256 indexed pluginId, address pluginAddress);
-    event PluginUpdated(
-        uint256 indexed pluginId,
-        address indexed newPluginAddress
-    );
+    event PluginUpdated(uint256 indexed pluginId, address indexed newPluginAddress);
     event PluginRemoved(uint256 indexed pluginId);
     event PluginExecuted(uint256 indexed pluginId, uint256 returnedValue);
 
@@ -64,10 +61,7 @@ contract Core is Ownable {
      * Checks if the plugin is present for the given id
      */
     modifier validPlugin(uint256 _pluginId) {
-        require(
-            s_pluginRegistry[_pluginId] != address(0),
-            Core_InvalidPlugin()
-        );
+        require(s_pluginRegistry[_pluginId] != address(0), Core_InvalidPlugin());
         _;
     }
 
@@ -102,9 +96,7 @@ contract Core is Ownable {
      * @param _pluginAddress The address of the plugin to add
      * @return currentCounter The id of the added plugin
      */
-    function addPlugin(
-        address _pluginAddress
-    )
+    function addPlugin(address _pluginAddress)
         external
         onlyOwner
         newPlugin(_pluginAddress)
@@ -128,10 +120,7 @@ contract Core is Ownable {
      * @param _pluginId The id of the plugin to update
      * @param _newPluginAddress Address of the updated plugin
      */
-    function updatePlugin(
-        uint256 _pluginId,
-        address _newPluginAddress
-    )
+    function updatePlugin(uint256 _pluginId, address _newPluginAddress)
         external
         onlyOwner
         newPlugin(_newPluginAddress)
@@ -152,9 +141,7 @@ contract Core is Ownable {
      *
      * @param _pluginId The id of the plugin to remove
      */
-    function removePlugin(
-        uint256 _pluginId
-    ) external onlyOwner validPlugin(_pluginId) {
+    function removePlugin(uint256 _pluginId) external onlyOwner validPlugin(_pluginId) {
         address pluginAddress = s_pluginRegistry[_pluginId];
         delete s_pluginRegistry[_pluginId];
         delete s_pluginIds[pluginAddress];
@@ -168,14 +155,14 @@ contract Core is Ownable {
      *
      * @param _pluginId The id of the plugin to remove
      */
-    function executePlugin(
-        uint256 _pluginId,
-        uint256 _input
-    ) external validPlugin(_pluginId) returns (uint256 result) {
+    function executePlugin(uint256 _pluginId, uint256 _input)
+        external
+        validPlugin(_pluginId)
+        returns (uint256 result)
+    {
         address plugin = s_pluginRegistry[_pluginId];
-        (bool success, bytes memory data) = address(plugin).delegatecall(
-            abi.encodeCall(IPlugin.performAction, (_input))
-        );
+        (bool success, bytes memory data) =
+            address(plugin).delegatecall(abi.encodeCall(IPlugin.performAction, (_input)));
         require(success, Core_PluginExecutionFailed(_pluginId));
 
         result = abi.decode(data, (uint256));
@@ -183,10 +170,7 @@ contract Core is Ownable {
         return result;
     }
 
-    function readPluginStorage(
-        bytes32 slot,
-        uint256 offset
-    ) external view returns (bytes32 value) {
+    function readPluginStorage(bytes32 slot, uint256 offset) external view returns (bytes32 value) {
         assembly {
             value := sload(add(slot, offset))
         }

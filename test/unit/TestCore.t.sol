@@ -18,10 +18,7 @@ contract VaultPluginTest is Test {
 
     // Events
     event PluginAdded(uint256 indexed pluginId, address pluginAddress);
-    event PluginUpdated(
-        uint256 indexed pluginId,
-        address indexed newPluginAddress
-    );
+    event PluginUpdated(uint256 indexed pluginId, address indexed newPluginAddress);
     event PluginRemoved(uint256 indexed pluginId);
     event PluginExecuted(uint256 indexed pluginId, uint256 returnedValue);
     event ActionPerformed(uint256 vaultId, address owner, uint256 balance);
@@ -75,12 +72,7 @@ contract VaultPluginTest is Test {
     //** Test access control for adding plugin (only owner is allowed to add) */
     function test_OnlyOwnerCanAddPlugin() external {
         vm.prank(tom);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                Ownable.OwnableUnauthorizedAccount.selector,
-                tom
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, tom));
         core.addPlugin(address(vaultPlugin));
         console.log(unicode"Access control working for addPlugin.✅");
     }
@@ -136,12 +128,7 @@ contract VaultPluginTest is Test {
         uint256 id = core.addPlugin(address(vaultPlugin));
 
         vm.prank(tom);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                Ownable.OwnableUnauthorizedAccount.selector,
-                tom
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, tom));
         core.updatePlugin(id, address(examplePlugin));
         console.log(unicode"Access control working for updatePlugin.✅");
     }
@@ -172,9 +159,7 @@ contract VaultPluginTest is Test {
         vm.expectRevert(Core.Core_InvalidId.selector);
         core.updatePlugin(9, address(examplePlugin));
         vm.stopPrank();
-        console.log(
-            unicode"Validations are working correctly for updatePlugin.✅"
-        );
+        console.log(unicode"Validations are working correctly for updatePlugin.✅");
     }
 
     //** Test if owner can remove an existing plugin */
@@ -200,12 +185,7 @@ contract VaultPluginTest is Test {
         uint256 id = core.addPlugin(address(examplePlugin));
 
         vm.prank(alex);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                Ownable.OwnableUnauthorizedAccount.selector,
-                alex
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, alex));
         core.removePlugin(id);
         console.log(unicode"Access control working for removePlugin.✅");
     }
@@ -266,9 +246,7 @@ contract VaultPluginTest is Test {
         assertTrue(firstVaultId != secondVaultId);
 
         console.log(unicode"Dynamic dispatch working for vault plugin.✅");
-        console.log(
-            unicode"The vault plugin correctly creates vaults and returns unique vault IDs.✅"
-        );
+        console.log(unicode"The vault plugin correctly creates vaults and returns unique vault IDs.✅");
     }
 
     //** Test if the Example plugin is getting executed correctly via Core */
